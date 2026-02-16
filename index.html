@@ -9,7 +9,9 @@
   <meta property="og:title" content="Good Morning – a daily message for someone you care about">
   <meta property="og:description" content="Send a simple good morning and a daily simple pleasure to someone special.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="">
+  <meta property="og:image" content="/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -188,9 +190,10 @@
     (function() {
       var og = document.querySelector('meta[property="og:image"]');
       if (og) {
-        var base = location.pathname.replace(/\/[^/]*$/, '') || '/';
-        if (!base.endsWith('/')) base += '/';
-        og.setAttribute('content', location.origin + base + 'og-image.svg');
+        var c = og.getAttribute('content') || '';
+        if (!c || c.indexOf('http') !== 0) {
+          og.setAttribute('content', location.origin + (c || '/og-image.png'));
+        }
       }
     })();
     const messages = [
@@ -364,8 +367,16 @@
     }
 
     function buildNamesUrl(to, from) {
-      const segment = [to, from].filter(Boolean).join('+');
-      return location.pathname + location.search + '#' + encodeURIComponent(segment);
+      var segment = [to, from]
+        .filter(Boolean)
+        .map(function(s) { return encodeURIComponent(s).replace(/%20/g, '+'); })
+        .join('+');
+      if (location.protocol === 'file:') {
+        return location.pathname + location.search + '#' + encodeURIComponent(segment);
+      }
+      var base = location.pathname.replace(/\/[^/]*$/, '') || '/';
+      var path = (base.endsWith('/') ? base : base + '/') + segment;
+      return location.origin + path;
     }
 
     const dayOfYear = getDayOfYear();
@@ -437,25 +448,30 @@
 
     document.getElementById('createAnother').addEventListener('click', function(e) {
       e.preventDefault();
-      location.hash = '';
-      updateDisplay(parseNames(), false);
-      document.getElementById('to').value = '';
-      document.getElementById('from').value = '';
+      const base = location.pathname.replace(/\/[^/]+$/, '') || '/';
+      location.href = location.origin + (base.endsWith('/') ? base : base + '/');
     });
 
-    const names = parseNames();
-    updateDisplay(names, false);
+    var names = parseNames();
+    var justCreated = sessionStorage.getItem('goodMorningJustCreated');
+    if (justCreated) sessionStorage.removeItem('goodMorningJustCreated');
+    updateDisplay(names, !!(names && justCreated));
 
     if (!names || (!names.to && !names.from)) {
-      formEl.addEventListener('submit', (e) => {
+      formEl.addEventListener('submit', function(e) {
         e.preventDefault();
-        const to = document.getElementById('to').value.trim();
-        const from = document.getElementById('from').value.trim();
+        var to = document.getElementById('to').value.trim();
+        var from = document.getElementById('from').value.trim();
         if (!to && !from) return;
-        const segment = [to, from].filter(Boolean).join('+');
-        location.hash = encodeURIComponent(segment);
-        updateDisplay(parseNames(), true);
-        copyBtn.focus();
+        var url = buildNamesUrl(to, from);
+        if (location.protocol === 'file:') {
+          location.hash = encodeURIComponent([to, from].filter(Boolean).map(function(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }).join('+'));
+          updateDisplay(parseNames(), true);
+          copyBtn.focus();
+        } else {
+          sessionStorage.setItem('goodMorningJustCreated', '1');
+          location.href = url;
+        }
       });
     }
   </script>
