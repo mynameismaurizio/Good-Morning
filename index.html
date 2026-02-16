@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Good Morning</title>
+  <title>Good Morning – a daily message for someone you care about</title>
+  <meta name="description" content="Send a simple good morning and a daily simple pleasure to someone special. Create a personal link and share the warmth.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta property="og:title" content="Good Morning – a daily message for someone you care about">
+  <meta property="og:description" content="Send a simple good morning and a daily simple pleasure to someone special.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -86,6 +92,37 @@
       text-align: left;
     }
     .form.hidden { display: none; }
+    .link-actions { margin-top: 1.5rem; }
+    .link-actions.hidden { display: none; }
+    .link-ready { font-size: 0.9rem; color: #a08070; margin-bottom: 0.75rem; }
+    .copy-btn {
+      padding: 0.6rem 1.25rem;
+      background: #d4a090;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: #c89080; }
+    .link-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+    .share-btn {
+      padding: 0.6rem 1.25rem;
+      background: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .share-btn:hover { background: #7a6347; }
+    .share-btn.hidden { display: none; }
+    .create-another { font-size: 0.85rem; color: #a08070; text-decoration: none; }
+    .create-another:hover { text-decoration: underline; }
     .form label {
       font-size: 0.8rem;
       color: #a08070;
@@ -114,15 +151,40 @@
       margin-top: 0.25rem;
     }
     .form button:hover { background: #c89080; }
+    @media (prefers-color-scheme: dark) {
+      body { background: linear-gradient(135deg, #2a2420 0%, #3d322c 50%, #352d28 100%); color: #e8e0d8; }
+      .card { background: rgba(45, 40, 36, 0.85); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+      h1 { color: #e8e0d8; }
+      .pleasure-label, .link-ready { color: #c4b4a8; }
+      .pleasure { color: #d4c4b8; }
+      .from-text, .create-another { color: #c4b4a8; }
+      .credit { color: #9a8a80; }
+      .credit a { color: #c4b4a8; }
+      .form label { color: #c4b4a8; }
+      .form input { border-color: rgba(196, 180, 168, 0.4); color: #e8e0d8; background: rgba(55, 50, 45, 0.9); }
+      .form input::placeholder { color: #9a8a80; }
+      .form button, .copy-btn { background: #a08070; }
+      .form button:hover, .copy-btn:hover { background: #8a6a5c; }
+      .share-btn { background: #7a6347; }
+      .share-btn:hover { background: #6a5340; }
+    }
   </style>
 </head>
 <body>
   <main class="card">
-    <div class="emoji">☀️</div>
+    <div class="emoji" id="emoji"></div>
     <h1 id="message"></h1>
     <p class="pleasure-label">Today's simple pleasure</p>
     <p class="pleasure" id="pleasure"></p>
     <p class="from-text" id="fromText"></p>
+    <div class="link-actions hidden" id="linkActions">
+      <p class="link-ready" id="linkReady">Link ready – copy and share</p>
+      <div class="link-buttons">
+        <button type="button" class="copy-btn" id="copyBtn">Copy link</button>
+        <button type="button" class="share-btn hidden" id="shareBtn">Share</button>
+      </div>
+      <a href="#" class="create-another" id="createAnother">Create another link</a>
+    </div>
     <form class="form" id="form">
       <div>
         <label for="to">To (who is this for?)</label>
@@ -140,6 +202,14 @@
     </p>
   </main>
   <script>
+    (function() {
+      var og = document.querySelector('meta[property="og:image"]');
+      if (og) {
+        var base = location.pathname.replace(/\/[^/]*$/, '') || '/';
+        if (!base.endsWith('/')) base += '/';
+        og.setAttribute('content', location.origin + base + 'og-image.svg');
+      }
+    })();
     const messages = [
       "Good morning, sunshine! Today is full of possibilities.",
       "Rise and shine! You've got this.",
@@ -182,8 +252,37 @@
       "Morning! Today could surprise you.",
       "Good morning! You're braver than you know.",
       "Wake up and smile. It helps.",
+      "Morning! Your smile is someone's sunshine.",
+      "Good morning! Today is yours to shape.",
+      "Rise and shine! One small win at a time.",
+      "Hello! May today be soft and kind.",
+      "Morning! You matter more than you know.",
+      "Good morning! Let the day surprise you.",
+      "Wake up, lovely. The world is waiting.",
+      "Morning! Rest when you need to.",
+      "Good morning! You're doing better than you think.",
+      "Rise and glow! Be your own gentle guide.",
+      "Hello! Hope today feels like a hug.",
+      "Morning! It's okay to take things slow.",
+      "Good morning! You deserve good things.",
+      "Wake up and breathe. You're here.",
+      "Morning! Someone is glad you exist.",
+      "Good morning! Today could be the day.",
+      "Rise and shine! You've already won by showing up.",
+      "Hello! May your coffee be strong and your day light.",
+      "Morning! You're allowed to have a good day.",
+      "Good morning! Let kindness lead the way.",
+      "Wake up, beautiful soul. You're enough.",
+      "Morning! Small joys count as wins.",
+      "Good morning! Hope today brings you calm.",
+      "Rise and glow! You're not alone.",
+      "Morning! Tomorrow can wait; today is now.",
+      "Good morning! You're loved more than you know.",
+      "Hello! Here's to a day that feels right.",
+      "Morning! You've got room to grow and rest.",
     ];
 
+    const emojis = ['☀️', '☕', '🌸', '✨', '🌅', '🦋', '🌿', '💛'];
     const pleasures = [
       "First sip of coffee in the morning",
       "Clean sheets at the end of the day",
@@ -225,6 +324,30 @@
       "Opening a window to let fresh air in",
       "The relief of putting your feet up",
       "Noticing something beautiful on your usual route",
+      "The sound of a loved one's voice",
+      "Sitting in a patch of sun",
+      "A perfectly ripe piece of fruit",
+      "The moment right before you fall asleep",
+      "An old photo that makes you smile",
+      "The smell of rain on dry pavement",
+      "Your favourite mug in your hands",
+      "A stretch that hits the spot",
+      "Leaving a little earlier so you're not rushed",
+      "A stranger holding the door for you",
+      "The first page of a new journal",
+      "Bare feet on cool tiles",
+      "A song that takes you back",
+      "The weight of a book in your bag",
+      "Someone remembering something you said",
+      "The hum of a quiet room",
+      "A warm towel after a shower",
+      "The last bite of a good meal",
+      "Looking up at the sky for no reason",
+      "A plant that's still alive",
+      "The click of a pen",
+      "Saying thank you and meaning it",
+      "A clear surface to work on",
+      "The quiet after turning off a screen",
     ];
 
     function getDayOfYear() {
@@ -264,16 +387,21 @@
 
     const dayOfYear = getDayOfYear();
     const index = dayOfYear % messages.length;
+    const emojiEl = document.getElementById('emoji');
     const messageEl = document.getElementById('message');
     const pleasureEl = document.getElementById('pleasure');
     const fromEl = document.getElementById('fromText');
     const formEl = document.getElementById('form');
+    const linkActionsEl = document.getElementById('linkActions');
+    const copyBtn = document.getElementById('copyBtn');
 
     function updateDisplay(names) {
+      emojiEl.textContent = emojis[index % emojis.length];
       pleasureEl.textContent = pleasures[index];
       let baseMessage = messages[index];
       if (names && (names.to || names.from)) {
         formEl.classList.add('hidden');
+        linkActionsEl.classList.remove('hidden');
         if (names.from && names.to) {
           baseMessage = names.from + ' wishes you a good morning, ' + names.to + '!';
           fromEl.style.display = 'none';
@@ -293,10 +421,43 @@
         }
         messageEl.textContent = baseMessage;
       } else {
+        linkActionsEl.classList.add('hidden');
+        formEl.classList.remove('hidden');
         fromEl.style.display = 'none';
         messageEl.textContent = baseMessage;
       }
     }
+
+    function copyLink() {
+      const url = location.href;
+      navigator.clipboard.writeText(url).then(function() {
+        const label = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(function() { copyBtn.textContent = label; }, 2000);
+      });
+    }
+
+    copyBtn.addEventListener('click', copyLink);
+
+    const shareBtn = document.getElementById('shareBtn');
+    if (navigator.share) {
+      shareBtn.classList.remove('hidden');
+      shareBtn.addEventListener('click', function() {
+        navigator.share({
+          title: 'Good Morning',
+          text: 'A good morning for you',
+          url: location.href
+        }).catch(function() {});
+      });
+    }
+
+    document.getElementById('createAnother').addEventListener('click', function(e) {
+      e.preventDefault();
+      location.hash = '';
+      updateDisplay(parseNames());
+      document.getElementById('to').value = '';
+      document.getElementById('from').value = '';
+    });
 
     const names = parseNames();
     updateDisplay(names);
@@ -310,6 +471,7 @@
         const segment = [to, from].filter(Boolean).join('+');
         location.hash = encodeURIComponent(segment);
         updateDisplay(parseNames());
+        copyBtn.focus();
       });
     }
   </script>
