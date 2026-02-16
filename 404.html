@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Good Morning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #fef7f0 0%, #fce8e0 50%, #faf0e8 100%);
+      padding: 1.5rem;
+      color: #5c4a42;
+    }
+    .card {
+      max-width: 28rem;
+      width: 100%;
+      text-align: center;
+      padding: 2.5rem 2rem;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(220, 180, 160, 0.2);
+      backdrop-filter: blur(8px);
+    }
+    .emoji {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      margin-bottom: 1rem;
+      line-height: 1;
+    }
+    h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 700;
+      color: #5c4a42;
+      line-height: 1.4;
+      margin-bottom: 1.5rem;
+    }
+    .pleasure-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #a08070;
+      margin-bottom: 0.5rem;
+    }
+    .pleasure {
+      font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+      font-weight: 600;
+      color: #8b7355;
+      font-style: italic;
+    }
+    .from-text {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: #a08070;
+      font-style: italic;
+    }
+    .credit {
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      color: #b8a090;
+    }
+    .credit a {
+      color: #a08070;
+      text-decoration: none;
+    }
+    .credit a:hover {
+      text-decoration: underline;
+    }
+    .form {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(160, 128, 112, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: left;
+    }
+    .form.hidden { display: none; }
+    .form label {
+      font-size: 0.8rem;
+      color: #a08070;
+      font-weight: 600;
+    }
+    .form input {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(160, 128, 112, 0.3);
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 1rem;
+      color: #5c4a42;
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .form input::placeholder { color: #b8a090; }
+    .form button {
+      padding: 0.6rem 1.25rem;
+      background: #d4a090;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.25rem;
+    }
+    .form button:hover { background: #c89080; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="emoji">☀️</div>
+    <h1 id="message"></h1>
+    <p class="pleasure-label">Today's simple pleasure</p>
+    <p class="pleasure" id="pleasure"></p>
+    <p class="from-text" id="fromText"></p>
+    <form class="form" id="form">
+      <div>
+        <label for="to">To (who is this for?)</label>
+        <input type="text" id="to" placeholder="Their name" autocomplete="off">
+      </div>
+      <div>
+        <label for="from">From (who is it from?)</label>
+        <input type="text" id="from" placeholder="Your name" autocomplete="off">
+      </div>
+      <button type="submit">Create my link</button>
+    </form>
+    <p class="credit">
+      Simple pleasures from <a href="https://www.are.na/alex-singh/a-catalogue-of-simple-pleasures" target="_blank" rel="noopener">A Catalogue of Simple Pleasures</a><br>
+      Developed with ❤️ by <a href="https://rocco.gimondi.com/" target="_blank" rel="noopener">Rocco</a>
+    </p>
+  </main>
+  <script>
+    const messages = [
+      "Good morning, sunshine! Today is full of possibilities.",
+      "Rise and shine! You've got this.",
+      "Morning! Hope today treats you kindly.",
+      "Wake up, beautiful. A new day awaits.",
+      "Coffee's ready, so are you. Let's go!",
+      "Hello, lovely. Make today count.",
+      "Good morning! Something good is coming your way.",
+      "Rise and glow! The world needs your light.",
+      "Morning vibes only. You're doing great.",
+      "Wake up and sparkle! Today deserves your best.",
+      "Good morning! Take it one step at a time.",
+      "Rise and shine, you amazing human.",
+      "Morning! Don't forget to be kind to yourself.",
+      "Hello, day! Let's make it a good one.",
+      "Good morning! Breathe, smile, and begin.",
+      "Wake up with gratitude. You've got this.",
+      "Morning! Today is your blank canvas.",
+      "Rise and shine! Small steps, big wins.",
+      "Good morning, sweet soul. Take care of you.",
+      "Hello! Hope your day is as lovely as you are.",
+      "Morning! Remember to notice the little things.",
+      "Wake up, beautiful. The universe is rooting for you.",
+      "Good morning! Start with a deep breath.",
+      "Rise and glow! You're exactly where you need to be.",
+      "Morning! Today's a gift—unwrap it slowly.",
+      "Good morning! May today be gentle with you.",
+      "Hello, sunshine! Ready for whatever comes.",
+      "Wake up and bloom! You're doing fine.",
+      "Morning! One kind act can change someone's day.",
+      "Good morning! Trust the journey.",
+      "Rise and shine! Your presence matters.",
+      "Morning! Let today unfold at its own pace.",
+      "Good morning, dear one. You are enough.",
+      "Hello! Hope today brings you peace.",
+      "Wake up with curiosity. What will today bring?",
+      "Morning! Be gentle with yourself.",
+      "Good morning! Savor the small moments.",
+      "Rise and glow! You've survived 100% of your days.",
+      "Morning! Today could surprise you.",
+      "Good morning! You're braver than you know.",
+      "Wake up and smile. It helps.",
+    ];
+
+    const pleasures = [
+      "First sip of coffee in the morning",
+      "Clean sheets at the end of the day",
+      "The sound of rain on the window",
+      "A good stretch when you wake up",
+      "Sunlight streaming through the curtains",
+      "A handwritten note from someone you love",
+      "Steam rising from a hot drink",
+      "Walking without a destination",
+      "The smell of freshly cut grass",
+      "Finding something you thought you'd lost",
+      "The weight of a blanket when you're tired",
+      "A cool breeze on a warm day",
+      "Putting on clothes fresh from the dryer",
+      "The first bite of something you've been craving",
+      "Listening to a song that feels like it was made for you",
+      "Making someone laugh",
+      "The silence of early morning",
+      "Sinking into a warm bath",
+      "The crackle of a fireplace",
+      "Running your hands through fresh laundry",
+      "A slow, mindful exhale",
+      "The smell of bread baking",
+      "Catching someone's eye and exchanging a smile",
+      "The softness of a worn-in sweater",
+      "Hearing birdsong outside your window",
+      "Finishing a good book",
+      "The feel of grass beneath your bare feet",
+      "A nap in the afternoon sun",
+      "Writing something by hand",
+      "The first snow of the season",
+      "Sharing a meal with someone you care about",
+      "The scent of old books",
+      "Watching clouds drift slowly",
+      "A moment of complete stillness",
+      "The taste of cold water when you're thirsty",
+      "Receiving an unexpected kindness",
+      "The warmth of a cat or dog curled beside you",
+      "Opening a window to let fresh air in",
+      "The relief of putting your feet up",
+      "Noticing something beautiful on your usual route",
+    ];
+
+    function getDayOfYear() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const diff = now - start;
+      const oneDay = 86400000;
+      return Math.floor(diff / oneDay);
+    }
+
+    function parseNames() {
+      const params = new URLSearchParams(location.search);
+      const toParam = params.get('to');
+      const fromParam = params.get('from');
+      if (toParam || fromParam) return { to: toParam || '', from: fromParam || '' };
+
+      let segment = '';
+      if (location.hash) {
+        segment = decodeURIComponent(location.hash.slice(1));
+      } else {
+        const path = location.pathname;
+        const parts = path.split('/').filter(Boolean);
+        const last = parts[parts.length - 1];
+        if (last) segment = decodeURIComponent(last);
+      }
+      if (!segment || !segment.includes('+')) return null;
+      const plusIndex = segment.lastIndexOf('+');
+      const to = segment.slice(0, plusIndex).replace(/\+/g, ' ').trim();
+      const from = segment.slice(plusIndex + 1).trim();
+      return { to, from };
+    }
+
+    function buildNamesUrl(to, from) {
+      const segment = [to, from].filter(Boolean).join('+');
+      return location.pathname + location.search + '#' + encodeURIComponent(segment);
+    }
+
+    const dayOfYear = getDayOfYear();
+    const index = dayOfYear % messages.length;
+    const messageEl = document.getElementById('message');
+    const pleasureEl = document.getElementById('pleasure');
+    const fromEl = document.getElementById('fromText');
+    const formEl = document.getElementById('form');
+
+    function updateDisplay(names) {
+      pleasureEl.textContent = pleasures[index];
+      let baseMessage = messages[index];
+      if (names && (names.to || names.from)) {
+        formEl.classList.add('hidden');
+        if (names.from && names.to) {
+          baseMessage = names.from + ' wishes you a good morning, ' + names.to + '!';
+          fromEl.style.display = 'none';
+        } else {
+          if (names.to) {
+            baseMessage = baseMessage.replace(/sunshine|beautiful|lovely|sweet soul|dear one/gi, names.to);
+            if (!baseMessage.includes(names.to)) {
+              baseMessage = baseMessage.replace(/^(Good morning|Morning|Hello|Wake up|Rise and shine|Rise and glow)!?/i, (m) => m + ', ' + names.to + '!');
+            }
+          }
+          if (names.from) {
+            fromEl.textContent = 'From ' + names.from;
+            fromEl.style.display = 'block';
+          } else {
+            fromEl.style.display = 'none';
+          }
+        }
+        messageEl.textContent = baseMessage;
+      } else {
+        fromEl.style.display = 'none';
+        messageEl.textContent = baseMessage;
+      }
+    }
+
+    const names = parseNames();
+    updateDisplay(names);
+
+    if (!names || (!names.to && !names.from)) {
+      formEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const to = document.getElementById('to').value.trim();
+        const from = document.getElementById('from').value.trim();
+        if (!to && !from) return;
+        const segment = [to, from].filter(Boolean).join('+');
+        location.hash = encodeURIComponent(segment);
+        updateDisplay(parseNames());
+      });
+    }
+  </script>
+</body>
+</html>
