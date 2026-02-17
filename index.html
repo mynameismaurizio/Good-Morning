@@ -125,6 +125,9 @@
     .share-btn.hidden { display: none; }
     .create-another { font-size: 0.85rem; color: #a08070; text-decoration: none; }
     .create-another:hover { text-decoration: underline; }
+    .card-photo { margin: 1rem auto; display: none; max-width: 100%; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 20px rgba(220, 180, 160, 0.25); }
+    .card-photo.visible { display: block; }
+    .card-photo img { width: 100%; height: auto; max-height: 280px; object-fit: cover; vertical-align: middle; }
     .form label {
       font-size: 0.8rem;
       color: #a08070;
@@ -158,6 +161,7 @@
 <body>
   <main class="card">
     <div class="emoji" id="emoji"></div>
+    <div class="card-photo" id="cardPhoto"><img id="cardPhotoImg" src="" alt="Photo for you"></div>
     <h1 id="message"></h1>
     <p class="pleasure-label">Today's simple pleasure</p>
     <p class="pleasure" id="pleasure"></p>
@@ -178,6 +182,10 @@
       <div>
         <label for="from">From (who is it from?)</label>
         <input type="text" id="from" placeholder="Your name" autocomplete="off">
+      </div>
+      <div>
+        <label for="img">Photo (optional)</label>
+        <input type="url" id="img" placeholder="Paste a link to your photo (e.g. Imgur, Google Photos)" autocomplete="off">
       </div>
       <button type="submit">Create my link</button>
     </form>
@@ -366,17 +374,25 @@
       return { to, from };
     }
 
-    function buildNamesUrl(to, from) {
+    function getImageUrl() {
+      var url = (new URLSearchParams(location.search)).get('img') || '';
+      url = url.trim();
+      if (url && (url.indexOf('http://') === 0 || url.indexOf('https://') === 0)) return url;
+      return '';
+    }
+
+    function buildNamesUrl(to, from, imgUrl) {
       var segment = [to, from]
         .filter(Boolean)
         .map(function(s) { return encodeURIComponent(s).replace(/%20/g, '+'); })
         .join('+');
+      var query = imgUrl ? '?img=' + encodeURIComponent(imgUrl) : '';
       if (location.protocol === 'file:') {
-        return location.pathname + location.search + '#' + encodeURIComponent(segment);
+        return location.pathname + query + '#' + encodeURIComponent(segment);
       }
       var base = location.pathname.replace(/\/[^/]*$/, '') || '/';
       var path = (base.endsWith('/') ? base : base + '/') + segment;
-      return location.origin + path;
+      return location.origin + path + query;
     }
 
     const dayOfYear = getDayOfYear();
@@ -388,6 +404,18 @@
     const formEl = document.getElementById('form');
     const linkActionsEl = document.getElementById('linkActions');
     const copyBtn = document.getElementById('copyBtn');
+    const cardPhoto = document.getElementById('cardPhoto');
+    const cardPhotoImg = document.getElementById('cardPhotoImg');
+
+    function setPageImage(url) {
+      if (url) {
+        cardPhoto.classList.add('visible');
+        cardPhotoImg.src = url;
+      } else {
+        cardPhoto.classList.remove('visible');
+        cardPhotoImg.removeAttribute('src');
+      }
+    }
 
     function updateDisplay(names, showLinkActions) {
       emojiEl.textContent = emojis[index % emojis.length];
@@ -456,21 +484,26 @@
     var justCreated = sessionStorage.getItem('goodMorningJustCreated');
     if (justCreated) sessionStorage.removeItem('goodMorningJustCreated');
     updateDisplay(names, !!(names && justCreated));
+    setPageImage(getImageUrl());
 
     if (!names || (!names.to && !names.from)) {
       formEl.addEventListener('submit', function(e) {
         e.preventDefault();
         var to = document.getElementById('to').value.trim();
         var from = document.getElementById('from').value.trim();
+        var imgUrl = (document.getElementById('img').value || '').trim();
+        if (imgUrl && imgUrl.indexOf('http://') !== 0 && imgUrl.indexOf('https://') !== 0) imgUrl = '';
         if (!to && !from) return;
-        var url = buildNamesUrl(to, from);
         if (location.protocol === 'file:') {
-          location.hash = encodeURIComponent([to, from].filter(Boolean).map(function(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }).join('+'));
+          var seg = [to, from].filter(Boolean).map(function(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }).join('+');
+          location.search = imgUrl ? '?img=' + encodeURIComponent(imgUrl) : '';
+          location.hash = encodeURIComponent(seg);
           updateDisplay(parseNames(), true);
+          setPageImage(getImageUrl());
           copyBtn.focus();
         } else {
           sessionStorage.setItem('goodMorningJustCreated', '1');
-          location.href = url;
+          location.href = buildNamesUrl(to, from, imgUrl);
         }
       });
     }
