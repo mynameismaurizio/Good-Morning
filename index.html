@@ -486,6 +486,14 @@
     updateDisplay(names, !!(names && justCreated));
     setPageImage(getImageUrl());
 
+    function shortenImageUrl(longUrl, cb) {
+      if (!longUrl || longUrl.length <= 80) return cb(longUrl);
+      fetch(location.origin + '/api/shorten?url=' + encodeURIComponent(longUrl))
+        .then(function(r) { return r.json(); })
+        .then(function(data) { cb(data.shortUrl || longUrl); })
+        .catch(function() { cb(longUrl); });
+    }
+
     if (!names || (!names.to && !names.from)) {
       formEl.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -501,6 +509,17 @@
           updateDisplay(parseNames(), true);
           setPageImage(getImageUrl());
           copyBtn.focus();
+        } else if (imgUrl) {
+          var btn = formEl.querySelector('button[type="submit"]');
+          var origText = btn.textContent;
+          btn.textContent = 'Shortening…';
+          btn.disabled = true;
+          shortenImageUrl(imgUrl, function(shortUrl) {
+            btn.textContent = origText;
+            btn.disabled = false;
+            sessionStorage.setItem('goodMorningJustCreated', '1');
+            location.href = buildNamesUrl(to, from, shortUrl);
+          });
         } else {
           sessionStorage.setItem('goodMorningJustCreated', '1');
           location.href = buildNamesUrl(to, from, imgUrl);
