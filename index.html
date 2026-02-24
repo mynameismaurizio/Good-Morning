@@ -88,6 +88,12 @@
     .credit a:hover {
       text-decoration: underline;
     }
+    .counter {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.65rem;
+      color: #b8a090;
+    }
     .form {
       margin-top: 1.5rem;
       padding-top: 1.5rem;
@@ -211,7 +217,8 @@
     </form>
     <p class="credit">
       Simple pleasures from <a href="https://www.are.na/alex-singh/a-catalogue-of-simple-pleasures" target="_blank" rel="noopener">Are.na</a><br>
-      Developed with ❤️ by <a href="https://rocco.gimondi.com/" target="_blank" rel="noopener">Rocco</a>
+      Developed with ❤️ by <a href="https://rocco.gimondi.com/" target="_blank" rel="noopener">Rocco</a><br>
+      <span id="counter" class="counter"></span>
     </p>
   </main>
   <script>
@@ -393,6 +400,25 @@
       return '';
     }
 
+    var COUNTER_KEY = 'goodMorningMessagesCreated';
+    function getMessageCount() {
+      try {
+        var n = parseInt(localStorage.getItem(COUNTER_KEY), 10);
+        return isNaN(n) ? 0 : n;
+      } catch (e) { return 0; }
+    }
+    function incrementMessageCount() {
+      var n = getMessageCount() + 1;
+      try { localStorage.setItem(COUNTER_KEY, String(n)); } catch (e) {}
+      return n;
+    }
+    function updateCounterDisplay() {
+      var el = document.getElementById('counter');
+      if (!el) return;
+      var n = getMessageCount();
+      el.textContent = n === 0 ? '' : n + ' message' + (n === 1 ? '' : 's') + ' created';
+    }
+
     function getCustomMessage() {
       var msg = (new URLSearchParams(location.search)).get('msg') || '';
       return msg.trim();
@@ -524,6 +550,7 @@
     if (justCreated) sessionStorage.removeItem('goodMorningJustCreated');
     updateDisplay(names, !!(names && justCreated));
     setPageImage(getImageUrl());
+    updateCounterDisplay();
 
     function shortenImageUrl(longUrl, cb) {
       if (!longUrl || longUrl.length <= 80) return cb(longUrl);
@@ -542,6 +569,8 @@
         var customMessage = (document.getElementById('msg').value || '').trim().slice(0, 500);
         if (imgUrl && imgUrl.indexOf('http://') !== 0 && imgUrl.indexOf('https://') !== 0) imgUrl = '';
         if (!to && !from && !customMessage) return;
+        incrementMessageCount();
+        updateCounterDisplay();
         if (location.protocol === 'file:') {
           var segHash = (to || '').trim() + '+' + (from || '').trim();
           if (segHash === '++') segHash = '';
