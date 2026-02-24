@@ -90,9 +90,9 @@
     }
     .counter {
       display: block;
-      margin-top: 0.5rem;
-      font-size: 0.65rem;
-      color: #b8a090;
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      color: #a08070;
     }
     .form {
       margin-top: 1.5rem;
@@ -416,7 +416,7 @@
       var el = document.getElementById('counter');
       if (!el) return;
       var n = getMessageCount();
-      el.textContent = n === 0 ? '' : n + ' message' + (n === 1 ? '' : 's') + ' created';
+      el.textContent = n + ' message' + (n === 1 ? '' : 's') + ' created';
     }
 
     function getCustomMessage() {
