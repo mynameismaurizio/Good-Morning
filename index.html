@@ -94,6 +94,7 @@
       font-size: 0.75rem;
       color: #a08070;
     }
+    .counter.hidden { display: none; }
     .form {
       margin-top: 1.5rem;
       padding-top: 1.5rem;
@@ -144,6 +145,7 @@
       font-weight: 600;
     }
     .form input {
+      width: 100%;
       padding: 0.5rem 0.75rem;
       border: 1px solid rgba(160, 128, 112, 0.3);
       border-radius: 0.5rem;
@@ -154,6 +156,7 @@
     }
     .form input::placeholder { color: #b8a090; }
     .form textarea {
+      width: 100%;
       padding: 0.5rem 0.75rem;
       border: 1px solid rgba(160, 128, 112, 0.3);
       border-radius: 0.5rem;
@@ -178,6 +181,55 @@
       margin-top: 0.25rem;
     }
     .form button:hover { background: #c89080; }
+    .giphy-block { margin-top: 0.75rem; }
+    .giphy-block > label { display: block; margin-bottom: 0.35rem; }
+    .giphy-row { display: flex; gap: 0.5rem; align-items: stretch; width: 100%; }
+    .giphy-row input { flex: 1; min-width: 0; }
+    .giphy-search-btn {
+      flex-shrink: 0;
+      padding: 0.5rem 0.9rem;
+      margin-top: 0;
+      background: #c4a090;
+      font-size: 0.9rem;
+    }
+    .giphy-search-btn:hover { background: #b89080; }
+    .giphy-results {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      max-height: 220px;
+      overflow-y: auto;
+      justify-content: flex-start;
+    }
+    .giphy-thumb {
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 0.35rem;
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.5);
+      width: 4.5rem;
+      height: 4.5rem;
+    }
+    .giphy-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      vertical-align: middle;
+      display: block;
+    }
+    .giphy-thumb:hover { border-color: rgba(212, 160, 144, 0.55); }
+    .giphy-thumb.selected { border-color: #d4a090; }
+    .giphy-loading,
+    .giphy-empty,
+    .giphy-hint {
+      font-size: 0.85rem;
+      color: #a08070;
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+    .giphy-hint.hidden { display: none; }
   </style>
 </head>
 <body>
@@ -206,8 +258,17 @@
         <input type="text" id="from" placeholder="Your name" autocomplete="off">
       </div>
       <div>
-        <label for="img">Photo (optional)</label>
-        <input type="url" id="img" placeholder="Paste a link to your photo (e.g. Imgur, Google Photos)" autocomplete="off">
+        <label for="img">Photo or GIF (optional)</label>
+        <input type="url" id="img" placeholder="Paste an image or GIF URL" autocomplete="off">
+        <div class="giphy-block">
+          <label for="giphySearch">Or search Giphy</label>
+          <div class="giphy-row">
+            <input type="search" id="giphySearch" placeholder="Search for a GIF…" autocomplete="off">
+            <button type="button" class="giphy-search-btn" id="giphySearchBtn">Search</button>
+          </div>
+          <p class="giphy-hint hidden" id="giphyUnavailable"></p>
+          <div class="giphy-results" id="giphyResults" role="list"></div>
+        </div>
       </div>
       <div>
         <label for="msg">Custom message (optional)</label>
@@ -412,9 +473,20 @@
       try { localStorage.setItem(COUNTER_KEY, String(n)); } catch (e) {}
       return n;
     }
-    function updateCounterDisplay() {
+    function isSharedMessageView(names) {
+      var customMsg = getCustomMessage();
+      return (names && (names.to || names.from)) || !!customMsg;
+    }
+
+    function updateCounterDisplay(show) {
       var el = document.getElementById('counter');
       if (!el) return;
+      if (!show) {
+        el.textContent = '';
+        el.classList.add('hidden');
+        return;
+      }
+      el.classList.remove('hidden');
       var n = getMessageCount();
       el.textContent = n + ' message' + (n === 1 ? '' : 's') + ' created';
     }
@@ -546,11 +618,12 @@
     });
 
     var names = parseNames();
-    var justCreated = sessionStorage.getItem('goodMorningJustCreated');
+    var justCreated = !!sessionStorage.getItem('goodMorningJustCreated');
     if (justCreated) sessionStorage.removeItem('goodMorningJustCreated');
     updateDisplay(names, !!(names && justCreated));
     setPageImage(getImageUrl());
-    updateCounterDisplay();
+    var showCounter = !isSharedMessageView(names) || justCreated;
+    updateCounterDisplay(showCounter);
 
     function shortenImageUrl(longUrl, cb) {
       if (!longUrl || longUrl.length <= 80) return cb(longUrl);
@@ -558,6 +631,78 @@
         .then(function(r) { return r.json(); })
         .then(function(data) { cb(data.shortUrl || longUrl); })
         .catch(function() { cb(longUrl); });
+    }
+
+    function runGiphySearch() {
+      var input = document.getElementById('giphySearch');
+      var q = (input && input.value || '').trim();
+      var resultsEl = document.getElementById('giphyResults');
+      var hint = document.getElementById('giphyUnavailable');
+      if (!resultsEl) return;
+      if (!q) {
+        resultsEl.innerHTML = '';
+        if (hint) { hint.classList.add('hidden'); hint.textContent = ''; }
+        return;
+      }
+      resultsEl.innerHTML = '<p class="giphy-loading">Searching…</p>';
+      if (hint) { hint.classList.add('hidden'); hint.textContent = ''; }
+      var origin = location.protocol === 'file:' ? '' : location.origin;
+      fetch(origin + '/api/giphy?q=' + encodeURIComponent(q))
+        .then(function(r) {
+          if (r.status === 503) return { unavailable: true };
+          if (!r.ok) throw new Error('bad');
+          return r.json();
+        })
+        .then(function(data) {
+          if (data.unavailable) {
+            if (hint) {
+              hint.textContent = 'GIF search needs GIPHY_API_KEY on the server. You can still paste a GIF URL above.';
+              hint.classList.remove('hidden');
+            }
+            resultsEl.innerHTML = '';
+            return;
+          }
+          var gifs = data.gifs || [];
+          if (!gifs.length) {
+            resultsEl.innerHTML = '<p class="giphy-empty">No GIFs found. Try another search.</p>';
+            return;
+          }
+          resultsEl.innerHTML = '';
+          gifs.forEach(function(g) {
+            if (!g.url) return;
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'giphy-thumb';
+            btn.setAttribute('aria-label', 'Use this GIF');
+            var img = document.createElement('img');
+            img.src = g.preview || g.url;
+            img.alt = g.title || '';
+            img.loading = 'lazy';
+            btn.appendChild(img);
+            btn.addEventListener('click', function() {
+              var imgInput = document.getElementById('img');
+              if (imgInput) imgInput.value = g.url;
+              resultsEl.querySelectorAll('.giphy-thumb').forEach(function(b) { b.classList.remove('selected'); });
+              btn.classList.add('selected');
+            });
+            resultsEl.appendChild(btn);
+          });
+        })
+        .catch(function() {
+          resultsEl.innerHTML = '<p class="giphy-empty">Could not search. Try again or paste a URL.</p>';
+        });
+    }
+
+    var giphyBtn = document.getElementById('giphySearchBtn');
+    var giphyInput = document.getElementById('giphySearch');
+    if (giphyBtn) giphyBtn.addEventListener('click', runGiphySearch);
+    if (giphyInput) {
+      giphyInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          runGiphySearch();
+        }
+      });
     }
 
     if (!names || (!names.to && !names.from)) {
@@ -570,7 +715,7 @@
         if (imgUrl && imgUrl.indexOf('http://') !== 0 && imgUrl.indexOf('https://') !== 0) imgUrl = '';
         if (!to && !from && !customMessage) return;
         incrementMessageCount();
-        updateCounterDisplay();
+        updateCounterDisplay(true);
         if (location.protocol === 'file:') {
           var segHash = (to || '').trim() + '+' + (from || '').trim();
           if (segHash === '++') segHash = '';
