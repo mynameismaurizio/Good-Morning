@@ -181,24 +181,92 @@
       margin-top: 0.25rem;
     }
     .form button:hover { background: #c89080; }
-    .giphy-block { margin-top: 0.75rem; }
-    .giphy-block > label { display: block; margin-bottom: 0.35rem; }
-    .giphy-row { display: flex; gap: 0.5rem; align-items: stretch; width: 100%; }
-    .giphy-row input { flex: 1; min-width: 0; }
-    .giphy-search-btn {
-      flex-shrink: 0;
-      padding: 0.5rem 0.9rem;
-      margin-top: 0;
-      background: #c4a090;
-      font-size: 0.9rem;
+    .media-field { width: 100%; }
+    .media-field > label { display: block; margin-bottom: 0.4rem; }
+    .media-url-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: stretch;
+      width: 100%;
     }
-    .giphy-search-btn:hover { background: #b89080; }
+    .media-url-row input[type="url"],
+    .media-url-row input[type="search"] {
+      width: auto;
+      flex: 1 1 108px;
+      min-width: 0;
+    }
+    .media-icon-btn {
+      flex-shrink: 0;
+      width: 2.5rem;
+      min-height: 2.5rem;
+      padding: 0;
+      margin-top: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(160, 128, 112, 0.35);
+      border-radius: 0.5rem;
+      color: #8b7355;
+      cursor: pointer;
+    }
+    .media-icon-btn:hover {
+      background: #fff;
+      border-color: #d4a090;
+      color: #5c4a42;
+    }
+    .media-icon-btn svg { display: block; }
+    .media-search-btn {
+      background: #d4a090;
+      border-color: #d4a090;
+      color: #fff;
+    }
+    .media-search-btn:hover {
+      background: #c89080;
+      border-color: #c89080;
+      color: #fff;
+    }
+    .giphy-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+    }
+    .giphy-pill {
+      padding: 0.28rem 0.7rem;
+      font-size: 0.75rem;
+      font-family: inherit;
+      font-weight: 600;
+      color: #7a6558;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(160, 128, 112, 0.35);
+      border-radius: 999px;
+      cursor: pointer;
+      margin-top: 0;
+    }
+    .giphy-pill:hover { border-color: #d4a090; color: #5c4a42; }
+    .giphy-pill.active {
+      background: rgba(212, 160, 144, 0.28);
+      border-color: #d4a090;
+      color: #5c4a42;
+    }
+    .giphy-section { margin-top: 0.65rem; }
+    .giphy-section.hidden { display: none; }
+    .giphy-section-title {
+      display: block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #a08070;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
     .giphy-results {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-top: 0.75rem;
-      max-height: 220px;
+      max-height: 200px;
       overflow-y: auto;
       justify-content: flex-start;
     }
@@ -209,8 +277,8 @@
       overflow: hidden;
       cursor: pointer;
       background: rgba(255, 255, 255, 0.5);
-      width: 4.5rem;
-      height: 4.5rem;
+      width: 4.25rem;
+      height: 4.25rem;
     }
     .giphy-thumb img {
       width: 100%;
@@ -226,7 +294,7 @@
     .giphy-hint {
       font-size: 0.85rem;
       color: #a08070;
-      margin-top: 0.5rem;
+      margin-top: 0.35rem;
       width: 100%;
     }
     .giphy-hint.hidden { display: none; }
@@ -257,18 +325,28 @@
         <label for="from">From (who is it from?)</label>
         <input type="text" id="from" placeholder="Your name" autocomplete="off">
       </div>
-      <div>
+      <div class="media-field">
         <label for="img">Photo or GIF (optional)</label>
-        <input type="url" id="img" placeholder="Paste an image or GIF URL" autocomplete="off">
-        <div class="giphy-block">
-          <label for="giphySearch">Or search Giphy</label>
-          <div class="giphy-row">
-            <input type="search" id="giphySearch" placeholder="Search for a GIF…" autocomplete="off">
-            <button type="button" class="giphy-search-btn" id="giphySearchBtn">Search</button>
-          </div>
-          <p class="giphy-hint hidden" id="giphyUnavailable"></p>
+        <div class="media-url-row">
+          <button type="button" class="media-icon-btn" id="pasteImgUrl" aria-label="Paste URL from clipboard" title="Paste URL">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/></svg>
+          </button>
+          <input type="url" id="img" placeholder="Image or GIF URL" autocomplete="off">
+          <input type="search" id="giphySearch" placeholder="Search Giphy" autocomplete="off" aria-label="Search Giphy">
+          <button type="button" class="media-icon-btn media-search-btn" id="giphySearchBtn" aria-label="Run Giphy search" title="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+        </div>
+        <div class="giphy-pills" id="giphyPills" role="toolbar" aria-label="GIF categories"></div>
+        <div class="giphy-section hidden" id="giphyRecentSection">
+          <span class="giphy-section-title">Recent</span>
+          <div class="giphy-results" id="giphyRecent" role="list"></div>
+        </div>
+        <div class="giphy-section">
+          <span class="giphy-section-title" id="giphyBrowseTitle">Trending</span>
           <div class="giphy-results" id="giphyResults" role="list"></div>
         </div>
+        <p class="giphy-hint hidden" id="giphyUnavailable"></p>
       </div>
       <div>
         <label for="msg">Custom message (optional)</label>
@@ -633,21 +711,106 @@
         .catch(function() { cb(longUrl); });
     }
 
-    function runGiphySearch() {
-      var input = document.getElementById('giphySearch');
-      var q = (input && input.value || '').trim();
-      var resultsEl = document.getElementById('giphyResults');
-      var hint = document.getElementById('giphyUnavailable');
-      if (!resultsEl) return;
-      if (!q) {
-        resultsEl.innerHTML = '';
-        if (hint) { hint.classList.add('hidden'); hint.textContent = ''; }
+    var RECENT_GIFS_KEY = 'goodMorningRecentGifs';
+    var MAX_RECENT = 16;
+    var GIPHY_CATEGORIES = [
+      { label: 'Good morning', q: 'good morning cute' },
+      { label: 'Coffee', q: 'coffee gif' },
+      { label: 'Love', q: 'love heart gif' },
+      { label: 'Cute', q: 'cute animals' },
+      { label: 'Hug', q: 'hug gif' },
+      { label: 'Flowers', q: 'flowers gif' },
+      { label: 'Sunrise', q: 'sunrise nature' },
+      { label: 'Celebrate', q: 'celebrate yay' },
+    ];
+
+    function giphyOrigin() {
+      return location.protocol === 'file:' ? '' : location.origin;
+    }
+
+    function getRecentGifs() {
+      try {
+        var raw = localStorage.getItem(RECENT_GIFS_KEY);
+        var arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) { return []; }
+    }
+
+    function saveRecentGif(g) {
+      if (!g || !g.url) return;
+      var entry = { url: g.url, preview: g.preview || g.url, id: g.id || '' };
+      var list = getRecentGifs().filter(function(x) { return x.url !== entry.url; });
+      list.unshift(entry);
+      list = list.slice(0, MAX_RECENT);
+      try { localStorage.setItem(RECENT_GIFS_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    function clearGiphyPillActive() {
+      document.querySelectorAll('.giphy-pill').forEach(function(p) { p.classList.remove('active'); });
+    }
+
+    function renderGiphyThumbs(gifs, container, imgInput) {
+      if (!container) return;
+      container.innerHTML = '';
+      gifs.forEach(function(g) {
+        if (!g.url) return;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'giphy-thumb';
+        btn.setAttribute('aria-label', 'Use this GIF');
+        var im = document.createElement('img');
+        im.src = g.preview || g.url;
+        im.alt = g.title || '';
+        im.loading = 'lazy';
+        btn.appendChild(im);
+        btn.addEventListener('click', function() {
+          if (imgInput) imgInput.value = g.url;
+          saveRecentGif(g);
+          renderRecentSection();
+          container.querySelectorAll('.giphy-thumb').forEach(function(b) { b.classList.remove('selected'); });
+          document.querySelectorAll('#giphyRecent .giphy-thumb').forEach(function(b) { b.classList.remove('selected'); });
+          document.querySelectorAll('#giphyResults .giphy-thumb').forEach(function(b) { b.classList.remove('selected'); });
+          btn.classList.add('selected');
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function renderRecentSection() {
+      var section = document.getElementById('giphyRecentSection');
+      var el = document.getElementById('giphyRecent');
+      var imgInput = document.getElementById('img');
+      if (!el || !section) return;
+      var items = getRecentGifs();
+      if (!items.length) {
+        section.classList.add('hidden');
         return;
       }
-      resultsEl.innerHTML = '<p class="giphy-loading">Searching…</p>';
-      if (hint) { hint.classList.add('hidden'); hint.textContent = ''; }
-      var origin = location.protocol === 'file:' ? '' : location.origin;
-      fetch(origin + '/api/giphy?q=' + encodeURIComponent(q))
+      section.classList.remove('hidden');
+      renderGiphyThumbs(items, el, imgInput);
+    }
+
+    function setGiphyUnavailable(show, text) {
+      var hint = document.getElementById('giphyUnavailable');
+      if (!hint) return;
+      if (show) {
+        hint.textContent = text || '';
+        hint.classList.remove('hidden');
+      } else {
+        hint.classList.add('hidden');
+        hint.textContent = '';
+      }
+    }
+
+    function loadTrendingGifs() {
+      var resultsEl = document.getElementById('giphyResults');
+      var titleEl = document.getElementById('giphyBrowseTitle');
+      if (titleEl) titleEl.textContent = 'Trending';
+      if (!resultsEl) return;
+      clearGiphyPillActive();
+      resultsEl.innerHTML = '<p class="giphy-loading">Loading…</p>';
+      setGiphyUnavailable(false);
+      fetch(giphyOrigin() + '/api/giphy?trending=1&limit=16')
         .then(function(r) {
           if (r.status === 503) return { unavailable: true };
           if (!r.ok) throw new Error('bad');
@@ -655,57 +818,119 @@
         })
         .then(function(data) {
           if (data.unavailable) {
-            if (hint) {
-              hint.textContent = 'GIF search needs GIPHY_API_KEY on the server. You can still paste a GIF URL above.';
-              hint.classList.remove('hidden');
-            }
+            setGiphyUnavailable(true, 'GIF browse needs GIPHY_API_KEY on the server. You can still paste an image URL.');
             resultsEl.innerHTML = '';
             return;
           }
           var gifs = data.gifs || [];
           if (!gifs.length) {
-            resultsEl.innerHTML = '<p class="giphy-empty">No GIFs found. Try another search.</p>';
+            resultsEl.innerHTML = '<p class="giphy-empty">Nothing to show yet.</p>';
             return;
           }
-          resultsEl.innerHTML = '';
-          gifs.forEach(function(g) {
-            if (!g.url) return;
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'giphy-thumb';
-            btn.setAttribute('aria-label', 'Use this GIF');
-            var img = document.createElement('img');
-            img.src = g.preview || g.url;
-            img.alt = g.title || '';
-            img.loading = 'lazy';
-            btn.appendChild(img);
-            btn.addEventListener('click', function() {
-              var imgInput = document.getElementById('img');
-              if (imgInput) imgInput.value = g.url;
-              resultsEl.querySelectorAll('.giphy-thumb').forEach(function(b) { b.classList.remove('selected'); });
-              btn.classList.add('selected');
-            });
-            resultsEl.appendChild(btn);
-          });
+          renderGiphyThumbs(gifs, resultsEl, document.getElementById('img'));
+        })
+        .catch(function() {
+          resultsEl.innerHTML = '<p class="giphy-empty">Could not load GIFs. Paste a URL or try again later.</p>';
+        });
+    }
+
+    function runGiphySearch(fromPillQuery) {
+      var input = document.getElementById('giphySearch');
+      var q = typeof fromPillQuery === 'string' ? fromPillQuery : (input && input.value || '').trim();
+      var resultsEl = document.getElementById('giphyResults');
+      var titleEl = document.getElementById('giphyBrowseTitle');
+      if (!resultsEl) return;
+      if (!q) {
+        if (input) input.value = '';
+        loadTrendingGifs();
+        return;
+      }
+      if (input && typeof fromPillQuery === 'string') input.value = q;
+      if (titleEl) titleEl.textContent = 'Results';
+      resultsEl.innerHTML = '<p class="giphy-loading">Searching…</p>';
+      setGiphyUnavailable(false);
+      fetch(giphyOrigin() + '/api/giphy?q=' + encodeURIComponent(q) + '&limit=20')
+        .then(function(r) {
+          if (r.status === 503) return { unavailable: true };
+          if (!r.ok) throw new Error('bad');
+          return r.json();
+        })
+        .then(function(data) {
+          if (data.unavailable) {
+            setGiphyUnavailable(true, 'GIF search needs GIPHY_API_KEY on the server. You can still paste a GIF URL.');
+            resultsEl.innerHTML = '';
+            return;
+          }
+          var gifs = data.gifs || [];
+          if (!gifs.length) {
+            resultsEl.innerHTML = '<p class="giphy-empty">No GIFs found. Try another word or category.</p>';
+            return;
+          }
+          renderGiphyThumbs(gifs, resultsEl, document.getElementById('img'));
         })
         .catch(function() {
           resultsEl.innerHTML = '<p class="giphy-empty">Could not search. Try again or paste a URL.</p>';
         });
     }
 
-    var giphyBtn = document.getElementById('giphySearchBtn');
-    var giphyInput = document.getElementById('giphySearch');
-    if (giphyBtn) giphyBtn.addEventListener('click', runGiphySearch);
-    if (giphyInput) {
-      giphyInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
+    function initMediaField() {
+      var pasteBtn = document.getElementById('pasteImgUrl');
+      var imgInput = document.getElementById('img');
+      var giphyBtn = document.getElementById('giphySearchBtn');
+      var giphyInput = document.getElementById('giphySearch');
+      var pillsEl = document.getElementById('giphyPills');
+
+      if (pasteBtn && imgInput) {
+        pasteBtn.addEventListener('click', function() {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            navigator.clipboard.readText().then(function(t) {
+              if (t) imgInput.value = t.trim();
+            }).catch(function() {
+              imgInput.focus();
+            });
+          } else {
+            imgInput.focus();
+          }
+        });
+      }
+
+      if (giphyBtn) {
+        giphyBtn.addEventListener('click', function() {
+          clearGiphyPillActive();
           runGiphySearch();
-        }
-      });
+        });
+      }
+      if (giphyInput) {
+        giphyInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            clearGiphyPillActive();
+            runGiphySearch();
+          }
+        });
+      }
+
+      if (pillsEl) {
+        GIPHY_CATEGORIES.forEach(function(cat) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'giphy-pill';
+          b.textContent = cat.label;
+          b.addEventListener('click', function() {
+            clearGiphyPillActive();
+            b.classList.add('active');
+            runGiphySearch(cat.q);
+          });
+          pillsEl.appendChild(b);
+        });
+      }
+
+      renderRecentSection();
+      loadTrendingGifs();
     }
 
     if (!names || (!names.to && !names.from)) {
+      initMediaField();
       formEl.addEventListener('submit', function(e) {
         e.preventDefault();
         var to = document.getElementById('to').value.trim();
