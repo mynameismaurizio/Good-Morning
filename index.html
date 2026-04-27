@@ -198,7 +198,7 @@
       min-width: 0;
     }
     .media-input-wrap input[type="url"] {
-      padding-right: 2.7rem;
+      padding-right: 2.95rem;
     }
     .media-icon-btn {
       width: 2.25rem;
@@ -214,23 +214,25 @@
       color: #8b7355;
       cursor: pointer;
     }
-    .media-paste-btn {
+    .form .media-paste-btn {
       position: absolute;
       top: 50%;
       right: 0.25rem;
       transform: translateY(-50%);
       width: 2rem;
       height: 2rem;
+      z-index: 2;
       background: transparent;
       border: 0;
       border-radius: 0;
-      color: #a08070;
+      color: #5c4a42;
     }
-    .media-paste-btn:hover,
-    .media-paste-btn:focus {
+    .form .media-paste-btn .paste-icon { display: block; }
+    .form .media-paste-btn:hover,
+    .form .media-paste-btn:focus {
       background: transparent;
       border: 0;
-      color: #8b7355;
+      color: #3f312b;
       outline: none;
     }
     .media-icon-btn:hover {
@@ -239,7 +241,7 @@
       color: #5c4a42;
     }
     .media-icon-btn svg { display: block; }
-    .gif-picker-btn {
+    .form .gif-picker-btn {
       flex-shrink: 0;
       min-height: 2.5rem;
       padding: 0 0.85rem;
@@ -253,18 +255,18 @@
       font-weight: 700;
       cursor: pointer;
     }
-    .gif-picker-btn:hover { background: #c89080; }
+    .form .gif-picker-btn:hover { background: #c89080; }
     .gif-picker {
       position: absolute;
       z-index: 10;
       top: calc(100% + 0.55rem);
       left: 0;
       right: 0;
-      padding: 0.85rem;
+      padding: 0.75rem;
       background: rgba(255, 252, 249, 0.98);
-      border: 1px solid rgba(160, 128, 112, 0.25);
-      border-radius: 0.85rem;
-      box-shadow: 0 12px 30px rgba(120, 80, 60, 0.16);
+      border: 1px solid rgba(160, 128, 112, 0.18);
+      border-radius: 0.75rem;
+      box-shadow: 0 14px 36px rgba(120, 80, 60, 0.14);
       text-align: left;
     }
     .gif-picker.hidden { display: none; }
@@ -282,16 +284,19 @@
     }
     .gif-picker-top {
       display: flex;
-      gap: 0.45rem;
+      gap: 0.4rem;
       align-items: center;
     }
     .gif-picker-top input[type="search"] {
       flex: 1;
       min-width: 0;
+      height: 2.25rem;
+      padding: 0.42rem 0.65rem;
+      font-size: 0.9rem;
     }
-    .gif-search-btn {
-      width: 2.4rem;
-      height: 2.4rem;
+    .form .gif-search-btn {
+      width: 2.25rem;
+      height: 2.25rem;
       padding: 0;
       margin-top: 0;
       display: inline-flex;
@@ -303,16 +308,18 @@
       border-radius: 0.5rem;
       cursor: pointer;
     }
-    .gif-search-btn:hover { background: #c89080; }
-    .giphy-pills {
+    .form .gif-search-btn:hover { background: #c89080; }
+    .form .gif-picker .giphy-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 0.25rem;
-      margin-top: 0.55rem;
+      margin-top: 0.5rem;
     }
-    .giphy-pill {
-      padding: 0.15rem 0.45rem;
-      font-size: 0.68rem;
+    .form .gif-picker .giphy-pill {
+      padding: 0.12rem 0.42rem;
+      min-height: 0;
+      font-size: 0.66rem;
+      line-height: 1.45;
       font-family: inherit;
       font-weight: 600;
       color: #9a8173;
@@ -322,49 +329,58 @@
       cursor: pointer;
       margin-top: 0;
     }
-    .giphy-pill:hover { border-color: rgba(212, 160, 144, 0.6); color: #7a6558; }
-    .giphy-pill.active {
+    .form .gif-picker .giphy-pill:hover {
+      background: rgba(212, 160, 144, 0.08);
+      border-color: rgba(212, 160, 144, 0.55);
+      color: #7a6558;
+    }
+    .form .gif-picker .giphy-pill.active {
       background: rgba(212, 160, 144, 0.14);
       border-color: rgba(212, 160, 144, 0.65);
       color: #7a6558;
     }
-    .giphy-section { margin-top: 0.65rem; }
+    .giphy-section { margin-top: 0.55rem; }
     .giphy-section.hidden { display: none; }
     .giphy-section-title {
       display: block;
-      font-size: 0.68rem;
+      font-size: 0.62rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: #a08070;
       font-weight: 600;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.35rem;
     }
-    .giphy-results {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      max-height: 180px;
+    .form .gif-picker .giphy-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+      gap: 0.4rem;
+      max-height: 168px;
       overflow-y: auto;
-      justify-content: flex-start;
+      padding-right: 0.15rem;
     }
-    .giphy-thumb {
+    .form .gif-picker .giphy-thumb {
+      width: 100%;
+      aspect-ratio: 1;
       padding: 0;
-      border: 2px solid transparent;
-      border-radius: 0.35rem;
+      margin: 0;
+      border: 1px solid transparent;
+      border-radius: 0.45rem;
       overflow: hidden;
       cursor: pointer;
-      background: rgba(255, 255, 255, 0.5);
-      width: 4rem;
-      height: 4rem;
+      background: rgba(255, 255, 255, 0.65);
+      line-height: 0;
     }
-    .giphy-thumb img {
+    .form .gif-picker .giphy-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-    .giphy-thumb:hover { border-color: rgba(212, 160, 144, 0.55); }
-    .giphy-thumb.selected { border-color: #d4a090; }
+    .form .gif-picker .giphy-thumb:hover { border-color: rgba(212, 160, 144, 0.55); }
+    .form .gif-picker .giphy-thumb.selected {
+      border-color: #d4a090;
+      box-shadow: 0 0 0 2px rgba(212, 160, 144, 0.14);
+    }
     .giphy-loading,
     .giphy-empty,
     .giphy-hint {
@@ -394,11 +410,11 @@
     </div>
     <form class="form" id="form">
       <div>
-        <label for="to">To (who is this for?)</label>
+        <label for="to">Who is this for?</label>
         <input type="text" id="to" placeholder="Their name" autocomplete="off">
       </div>
       <div>
-        <label for="from">From (who is it from?)</label>
+        <label for="from">Who is it from?</label>
         <input type="text" id="from" placeholder="Your name" autocomplete="off">
       </div>
       <div class="media-field">
@@ -407,7 +423,9 @@
           <div class="media-input-wrap">
             <input type="url" id="img" placeholder="Paste URL or Pick a GIF" autocomplete="off">
             <button type="button" class="media-icon-btn media-paste-btn" id="pasteImgUrl" aria-label="Paste URL from clipboard" title="Paste URL">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/></svg>
+              <svg class="paste-icon" width="17" height="17" viewBox="0 0 24 24" fill="#3f312b" aria-hidden="true">
+                <path d="M9 2h6a1 1 0 0 1 1 1v1h2a2 2 0 0 1 2 2v13a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a2 2 0 0 1 2-2h2V3a1 1 0 0 1 1-1Zm1 2v1h4V4h-4Zm-2 4a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2H8Zm0 4a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2H8Zm0 4a1 1 0 1 0 0 2h5a1 1 0 1 0 0-2H8Z"/>
+              </svg>
             </button>
           </div>
           <button type="button" class="gif-picker-btn" id="gifPickerBtn" aria-expanded="false" aria-controls="gifPicker">Pick a GIF</button>
